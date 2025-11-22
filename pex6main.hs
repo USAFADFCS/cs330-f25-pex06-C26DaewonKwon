@@ -18,13 +18,6 @@ typeIknot tripCode
    | fst(head tripCode) == fst(head(tail tripCode)) = typeIknot (tail(tail tripCode))
    | otherwise = head tripCode:typeIknot (tail tripCode)
 
-typeIIknot :: [(Char, Char)] -> [(Char, Char)]
-typeIIknot tripCode
-   | null tripCode = []
-   | listLength tripCode < 2 = tripCode
-   | snd(head tripCode) == snd(head(tail tripCode)) = typeIIknot (tail(tail tripCode))
-   | otherwise = head tripCode:typeIIknot (tail tripCode)
-
 typeIIknotCirc :: [(Char, Char)] -> [(Char, Char)]
 typeIIknotCirc tripCode
    | null tripCode = []
@@ -37,18 +30,19 @@ typeIIknotRemoveLast tripCode
    | listLength tripCode < 2 = []
    | otherwise = head tripCode:typeIIknotRemoveLast (tail tripCode)
 
-typeIIknotFinal :: [(Char, Char)] -> [(Char, Char)]
-typeIIknotFinal tripCode
+typeIIknot :: [(Char, Char)] -> [(Char, Char)]
+typeIIknot tripCode
    | null tripCode = []
    | listLength tripCode < 2 = tripCode
+   | snd(head tripCode) == snd(head(tail tripCode)) = typeIIknot (tail(tail tripCode))
    | snd(head tripCode) == snd(head (typeIIknotCirc(tripCode))) = typeIIknotRemoveLast (tail tripCode)
-   | otherwise = tripCode
+   | otherwise = head tripCode:typeIIknot (tail tripCode)
 
 unKnot :: [(Char, Char)] -> String
 unKnot tripCode
-   | null (typeIknot tripCode) && null (typeIIknotFinal(typeIIknot tripCode)) = "unknot"
+   | null (typeIknot tripCode) && null (typeIIknot tripCode) = "unknot"
    | typeIknot tripCode /= tripCode = unKnot (typeIknot tripCode)
-   | typeIIknotFinal(typeIIknot tripCode) /= tripCode = unKnot (typeIIknotFinal(typeIIknot tripCode))
+   | typeIIknot tripCode /= tripCode = unKnot (typeIIknot tripCode)
    | otherwise = "tangle - resulting trip code: " ++ (show tripCode)
 
 main :: IO ()
